@@ -64,7 +64,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='pyexifinfo',
-    version='0.4.0',
+    version='1.0.0',
     description="Simple Metadata extraction using Exiftool",
     url='https://github.com/guinslym/pyexifinfo',
     author='Guinslym',
@@ -75,13 +75,7 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Internet :: WWW/HTTP :: Indexing/Search'
     ],
     keywords='exiftool reader stats metadata image linux',

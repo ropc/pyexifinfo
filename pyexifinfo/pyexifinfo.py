@@ -8,6 +8,7 @@ import os
 import sys
 import logging
 import typing
+import shlex
 
 """
 #Helper functions
@@ -118,7 +119,7 @@ async def get_json(filename):
 
     #Process this function
     filename = os.path.abspath(filename)
-    s = await command_line(['exiftool', '-G', '-j', '-sort', filename])
+    s = await command_line(['exiftool', '-G', '-j', '-sort', shlex.quote(filename)])
     if s:
         #convert bytes to string
         s = s.decode('utf-8').rstrip('\r\n')
@@ -141,7 +142,7 @@ async def get_csv(filename):
 
     #Process this function
     filename = os.path.abspath(filename)
-    s = await command_line(['exiftool', '-G', '-csv', '-sort', filename])
+    s = await command_line(['exiftool', '-G', '-csv', '-sort', shlex.quote(filename)])
     if s:
         #convert bytes to string
         s = s.decode('utf-8')
@@ -165,7 +166,7 @@ async def get_xml(filename):
     #Process this function
     filename = os.path.abspath(filename)
 
-    s = await command_line(['exiftool', '-G', '-X', '-sort', filename])
+    s = await command_line(['exiftool', '-G', '-X', '-sort', shlex.quote(filename)])
     if s:
         #convert bytes to string
         s = s.decode('utf-8')
