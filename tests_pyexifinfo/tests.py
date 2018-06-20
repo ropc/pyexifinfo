@@ -1,5 +1,6 @@
 import pyexifinfo as p
 import csv
+import asyncio
 
 #tested with Pytest
 #
@@ -11,7 +12,8 @@ image = TESTSDIR + '/python-logo-master-v3-TM.png'
 
 def test_version_is_greater_than_8():
     """ test the version is greater than 8 """
-    a = p.ver()
+    loop = asyncio.get_event_loop()
+    a = loop.run_until_complete(p.ver())
     #transforming bytes to string
     a = a[0].decode('utf-8')
     #transform string to float
@@ -19,21 +21,26 @@ def test_version_is_greater_than_8():
     assert a >= 8
 
 def test_get_json():
-    a = p.get_json(image)
-    assert len(a[0]) == 25
+    loop = asyncio.get_event_loop()
+    a = loop.run_until_complete(p.get_json(image))
+    assert len(a[0]) >= 25
 
 def test_get_csv():
-    a = p.get_csv(image)
+    loop = asyncio.get_event_loop()
+    a = loop.run_until_complete(p.get_csv(image))
     assert a[0:10] == "SourceFile"
 
 def test_get_xml():
-    a = p.get_xml(image)
+    loop = asyncio.get_event_loop()
+    a = loop.run_until_complete(p.get_xml(image))
     assert a[0:5] == "<?xml"
 
 def test_get_fileType():
-    a = p.fileType(image)
+    loop = asyncio.get_event_loop()
+    a = loop.run_until_complete(p.fileType(image))
     assert a.lower() == 'png'
 
 def test_get_mimeType():
-    a = p.mimeType(image)
+    loop = asyncio.get_event_loop()
+    a = loop.run_until_complete(p.mimeType(image))
     assert a.lower() == 'image/png'

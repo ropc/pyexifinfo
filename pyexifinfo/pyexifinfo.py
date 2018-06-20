@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import asyncio
 import subprocess
 import json
 import os
 import sys
+import logging
+import typing
 
 """
 #Helper functions
@@ -42,7 +45,7 @@ def check_if_this_file_exist(filename):
 
 ####HELPER section
 
-def command_line(cmd):
+async def command_line(cmd):
     """Handle the command line call
 
     keyword arguments:
@@ -52,20 +55,23 @@ def command_line(cmd):
     0 if error
     or a string for the command line output
     """
+    if isinstance(cmd, typing.List):
+        cmd = ' '.join(cmd)
     try:
-        s = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        s = s.stdout.read()
+        p = await asyncio.create_subprocess_shell(cmd, stdout=subprocess.PIPE)
+        s = await p.stdout.read()
 
         return s.strip()
 
-    except subprocess.CalledProcessError:
-        return 0
+    except Exception as e:
+        logging.error(e)
+        return None
 
-def information(filename):
+async def information(filename):
     """Returns the file exif"""
     check_if_this_file_exist(filename)
     filename = os.path.abspath(filename)
-    result = get_json(filename)
+    result = await get_json(filename)
     result = result[0]
     return result
 
@@ -79,7 +85,7 @@ def information(filename):
 ===========================================================
 """
 
-def ver():
+async def ver():
     """ Version of Exiftool
 
     Retrieve the current version of exiftool installed on your computer
@@ -91,13 +97,13 @@ def ver():
         ValueError -- If you uninstalled or haven't installed yet Exiftool
         than this should raise an error
     """
-    s = command_line(["exiftool","-ver"])
+    s = await command_line(["exiftool","-ver"])
     if s:
         return s.split()
     else:
         raise ValueError("You didn't install Exiftool on this Operating System")
 
-def get_json(filename):
+async def get_json(filename):
     """ Return a json value of the exif
 
     Get a filename and return a JSON object
@@ -112,7 +118,7 @@ def get_json(filename):
 
     #Process this function
     filename = os.path.abspath(filename)
-    s = command_line(['exiftool', '-G', '-j', '-sort', filename])
+    s = await command_line(['exiftool', '-G', '-j', '-sort', filename])
     if s:
         #convert bytes to string
         s = s.decode('utf-8').rstrip('\r\n')
@@ -120,7 +126,7 @@ def get_json(filename):
     else:
         return s
 
-def get_csv(filename):
+async def get_csv(filename):
     """ Return a csv representation of the exif
 
     get a filename and returns a unicode string with a CSV format
@@ -135,7 +141,7 @@ def get_csv(filename):
 
     #Process this function
     filename = os.path.abspath(filename)
-    s = command_line(['exiftool', '-G', '-csv', '-sort', filename])
+    s = await command_line(['exiftool', '-G', '-csv', '-sort', filename])
     if s:
         #convert bytes to string
         s = s.decode('utf-8')
@@ -143,7 +149,7 @@ def get_csv(filename):
     else:
         return 0
 
-def get_xml(filename):
+async def get_xml(filename):
     """ Return a XML representation of the exif
 
     get a filename and return a unicode string  in a XML format
@@ -159,7 +165,7 @@ def get_xml(filename):
     #Process this function
     filename = os.path.abspath(filename)
 
-    s = command_line(['exiftool', '-G', '-X', '-sort', filename])
+    s = await command_line(['exiftool', '-G', '-X', '-sort', filename])
     if s:
         #convert bytes to string
         s = s.decode('utf-8')
@@ -167,12 +173,12 @@ def get_xml(filename):
     else:
         return 0
 
-def fileType(filename):
+async def fileType(filename):
     """Returns the file extension"""
-    result =  information(filename)
+    result = await information(filename)
     return result.get('File:FileType', 0)
 
-def mimeType(filename):
+async def mimeType(filename):
     """Returns the file extension"""
-    result =  information(filename)
+    result = await information(filename)
     return result.get('File:MIMEType', 0)
